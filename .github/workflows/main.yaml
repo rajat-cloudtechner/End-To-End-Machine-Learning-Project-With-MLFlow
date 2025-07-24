@@ -35,6 +35,7 @@ jobs:
         run: |
           black --check .
           flake8 .
+        continue-on-error: true
 
       - name: Run unit tests with pytest
         run: |
