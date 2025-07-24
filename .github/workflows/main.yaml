@@ -134,3 +134,8 @@ jobs:
 
       - name: Clean unused Docker images & containers
         run: docker system prune -f
+
+      - name: Upload Artifacts to S3
+        run: |
+          aws s3 cp artifacts/ s3://${{ secrets.S3_BUCKET_NAME }}/artifacts/ --recursive
+
