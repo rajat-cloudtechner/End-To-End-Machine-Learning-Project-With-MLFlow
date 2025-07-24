@@ -104,13 +104,16 @@ jobs:
         run: |
           docker rm -f mlproj || true
 
-      - name: Run Docker Image to serve users
+      - name: Run Docker Image with MLflow Tracking (Dagshub)
         run: |
           docker run -d -p 8080:8080 --name=mlproj \
             -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
             -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
             -e AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }} \
             -e AWS_REGION=${{ secrets.AWS_REGION }} \
+            -e MLFLOW_TRACKING_URI=https://dagshub.com/rajat-cloudtechner/End-To-End-Machine-Learning-Project-With-MLFlow.mlflow \
+            -e MLFLOW_TRACKING_USERNAME=rajat-cloudtechner \
+            -e MLFLOW_TRACKING_PASSWORD=71d98b54d6cf9acffdbc0166672f1fc96a0b8f17 \
             ${{ secrets.AWS_ECR_LOGIN_URI }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
       - name: Clean unused Docker images & containers
