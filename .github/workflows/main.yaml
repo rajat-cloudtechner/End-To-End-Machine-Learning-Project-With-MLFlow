@@ -13,17 +13,28 @@ permissions:
 
 jobs:
   integration:
-    name: Continuous Integration
+    name: Continuous Integration (Lint + Test)
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Lint code
-        run: echo "Linting repository"
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
 
-      - name: Run unit tests
-        run: echo "Running unit tests"
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install flake8 pytest
+
+      - name: Lint code with flake8
+        run: flake8 src/ tests/
+
+      - name: Run unit tests with pytest
+        run: pytest tests/
 
   build-and-push-ecr-image:
     name: Continuous Delivery
@@ -64,7 +75,7 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-  Continuous-Deployment:
+  Deployment:
     name: Continuous Deployment
     needs: build-and-push-ecr-image
     runs-on: self-hosted
