@@ -42,7 +42,7 @@ jobs:
           pytest -q --disable-warnings --maxfail=1
 
   build-and-push-ecr-image:
-    name: Continuous Delivery
+    name: Build-and-Push-ECR-Image
     needs: integration
     runs-on: ubuntu-latest
     steps:
@@ -81,7 +81,7 @@ jobs:
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
   Continuous-Deployment:
-    name: Continuous Deployment
+    name: Deployment
     needs: build-and-push-ecr-image
     runs-on: self-hosted
     steps:
