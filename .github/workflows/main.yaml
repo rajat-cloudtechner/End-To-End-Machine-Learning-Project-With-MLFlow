@@ -13,31 +13,32 @@ permissions:
 
 jobs:
   integration:
-    name: Continuous Integration (Lint + Test)
-    runs-on: ubuntu-latest
+  name: Continuous Integration
+  runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+  steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.8"
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
 
-      - name: Install Dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install flake8 pytest
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install black flake8 pytest
 
-      - name: Lint code with flake8 (non-blocking)
-        continue-on-error: true
-        run: |
-          echo "Running flake8 lint check..."
-          flake8 src/ tests/ || echo "Lint errors found, but continuing pipeline."
+    - name: Lint code with black and flake8
+      run: |
+        black --check .
+        flake8 .
 
-      - name: Run unit tests with pytest
-        run: pytest tests/
+    - name: Run unit tests with pytest
+      run: |
+        pytest -q --disable-warnings --maxfail=1
 
   build-and-push-ecr-image:
     name: Continuous Delivery
@@ -78,7 +79,7 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-  Deployment:
+  Continuous-Deployment:
     name: Continuous Deployment
     needs: build-and-push-ecr-image
     runs-on: self-hosted

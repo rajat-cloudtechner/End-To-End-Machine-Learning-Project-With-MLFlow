@@ -13,3 +13,6 @@ types-PyYAML
 Flask
 Flask-Cors
 -e .
+black
+flake8
+pytest
